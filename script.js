@@ -101,14 +101,19 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const displayMovements = function (account, sort = false) {
   containerMovements.innerHTML = '';
 
-  const movs = sort
-    ? account.movements.slice().sort((a, b) => a - b)
-    : account.movements;
+  const combinedMovementsDates = account.movements.map((mov, i) => ({
+    movement: mov,
+    movementDate: account.movementsDates.at(i),
+  }));
 
-  movs.forEach(function (mov, i) {
-    const type = mov > 0 ? 'deposit' : 'withdrawal';
+  if (sort) combinedMovementsDates.sort((a, b) => a.movement - b.movement);
 
-    const date = new Date(account.movementsDates[i]);
+  combinedMovementsDates.forEach(function (obj, i) {
+    const { movement, movementDate } = obj;
+    const type = movement > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(movementDate);
+
     const day = `${date.getDate()}`.padStart(2, 0);
     const month = `${date.getMonth() + 1}`.padStart(2, 0);
     const year = date.getFullYear();
@@ -121,7 +126,7 @@ const displayMovements = function (account, sort = false) {
           i + 1
         } ${type}</div>
         <div class="movements__date">${displayDate}</div>
-        <div class="movements__value">${mov.toFixed(2)}€</div>
+        <div class="movements__value">${movement.toFixed(2)}€</div>
       </div>
     `;
 
